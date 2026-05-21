@@ -234,12 +234,6 @@ body {
   margin: 0;
   background: var(--white);
   box-shadow: 0.25rem 0 0.5rem rgba(0,0,0,0.1);
-  
-  /* Rozwiązanie dla position: fixed - zabezpieczenie przed przycięciem */
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
   height: 100vh;
   max-height: 100vh;
   overflow-y: auto;
