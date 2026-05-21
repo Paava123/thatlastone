@@ -62,10 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
     cartCountBadge.classList.add('active');
 
     let html = '';
-    let totalPrice = 0;
+   
     state.cartItems.forEach((item, index) => {
       const itemTotal = item.price * item.quantity;
-      totalPrice += itemTotal;
+     
       html += `
         <div class="cart-item">
           <img src="${item.thumbnail}" alt="${item.name}">
