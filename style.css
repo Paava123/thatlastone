@@ -258,10 +258,11 @@ body {
 }
 
 .mobile-nav-list a {
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 1.125rem;
+    font-weight: 700;
+  font-size: 1.25rem;
   color: var(--very-dark-blue);
+  
+  text-decoration: none;
 }
 
 /* --- GŁÓWNA SEKCJA PRODUKTU --- */
