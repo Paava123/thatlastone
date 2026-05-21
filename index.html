@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght,YOPQ@100..900,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  
+  <title>Frontend Mentor | E-commerce product page</title>
+
+
+</head>
+<body>
+
+  <div class="overlay" aria-hidden="true"></div>
+
+  <header class="navigation__header">
+    
+    <button class="menu__icon" aria-label="Open Menu" aria-expanded="false" aria-controls="main__navigation" id="menu__icon">
+      <img src="./images/icon-menu.svg" alt="">
+    </button>
+    
+    <div class="logo">
+      <a href="index.html"><img src="./images/logo.svg" alt="Sneaker company Logo" class="logo__image"></a>
+    </div>
+
+    <nav class="main__navigation" aria-label="Main Navigation" id="main__navigation" >
+      <button class="close__button" aria-label="Close Menu" aria-controls="main__navigation" id="close__button">
+        <img src="./images/icon-close.svg" alt="">
+      </button>
+      <ul class="navigation__list">
+        <li class="navigation__item"><a href="#">Collections</a></li>
+        <li class="navigation__item"><a href="#">Men</a></li>
+        <li class="navigation__item"><a href="#">Women</a></li>
+        <li class="navigation__item"><a href="#">About</a></li>
+        <li class="navigation__item"><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="shop__user">
+      <button class="cart__button" aria-label="Shopping cart" aria-controls="cart__dropdown" aria-expanded="false">
+        <img src="./images/icon-cart.svg" alt="" class="cart__icon"><span class="cart__count"></span>
+      </button>
+      <img src="./images/image-avatar.png" alt="" class="user__avatar">
+      <div class="cart__dropdown" id="cart__dropdown" aria-hidden="true" aria-label="Shopping cart dropdown" role="region" aria-live="polite" hidden>
+        <h2 class="cart__title">Cart</h2>
+        <hr>
+        <div class="cart__content">
+          <p class="cart__status">Your cart is empty.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+    <main>
+      <section class="product">
+        <div class="product__image">
+          <button class="slidebar">
+              <img src="./images/icon-previous.svg" alt="Previous image" class="slidebar__button--previous">
+          </button>
+          <button class="slider">
+              <img src="./images/icon-next.svg" alt="Next image" class="slidebar__button--next">
+          </button>
+          <img src="./images/image-product-1.jpg" alt="Product image 1" class="product__main-image">
+          <div class="product__thumbnails">
+          <button aria-pressed="true" class="button__thumb"><img src="./images/image-product-1-thumbnail.jpg" alt="Product image 1" class="product__thumbnail"></button>
+          <button aria-pressed="false" class="button__thumb"><img src="./images/image-product-2-thumbnail.jpg" alt="Product image 2" class="product__thumbnail"></button>
+          <button aria-pressed="false" class="button__thumb"><img src="./images/image-product-3-thumbnail.jpg" alt="Product image 3" class="product__thumbnail"></button>
+          <button aria-pressed="false" class="button__thumb"><img src="./images/image-product-4-thumbnail.jpg" alt="Product image 4" class="product__thumbnail"></button>
+          </div>
+        </div>
+        <div class="product__details">
+          <span class="product__company">Sneaker Company</span>
+          <h1 class="product__name">Fall Limited Edition Sneakers</h1>
+          <p class="product__description">These low-profile sneakers are your perfect casual wear companion.
+             Featuring a durable rubber outer sole, they’ll withstand everything the weather can offer.</p>
+             <div class="product__pricing">
+              <span class="product__current__price" aria-label="Current Price: $125.00">$125.00</span>
+              <span class="product__discount" aria-label="Product Discount: 50%">50%</span>
+              <span class="original__price" aria-label="Original Price: $250.00"><s>$250.00</s></span>
+             </div>
+              <div class="product__wrapper">
+             <div class="product__quantity">
+              <button class="quantity__button--decrease" aria-label="Decrease quantity"><img src="./images/icon-minus.svg" alt="" aria-hidden="true"></button>
+              <span class="quantity__value" id="quantity" aria-live="polite">0</span>
+              <button class="quantity__button--increase" aria-label="Increase quantity"><img src="./images/icon-plus.svg" alt="" aria-hidden="true"></button>
+             </div>
+             <button class="add__product">
+              <img src="./images/icon-cart.svg" alt="" class="add__product--icon" aria-hidden="true">
+              <span class="add__txt">Add to cart</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <dialog role="dialog" aria-label="Image lightbox" id="lightboxModal" aria-modal="true">
+      <div class="lightbox">
+        <button class="lightbox__close" aria-label="Close lightbox"><img src="./images/icon-close.svg" alt=""></button>
+        <div class="lightbox__image-wrapper">
+          <button class="lightbox__slidebar">
+            <img src="./images/icon-previous.svg" alt="Previous image" class="lightbox__button--previous">
+          </button>
+          <button class="lightbox__slider">
+            <img src="./images/icon-next.svg" alt="Next image" class="lightbox__button--next">
+          </button>
+          <img src="./images/image-product-1.jpg" alt="Product image 1" class="lightbox__main-image">
+        </div>
+        <div class="lightbox__thumbnails">
+          <button aria-pressed="true" aria-label="View Image 1"><img src="./images/image-product-1-thumbnail.jpg" alt="" class="lightbox__thumbnail"></button>
+          <button aria-pressed="false" aria-label="View Image 2"><img src="./images/image-product-2-thumbnail.jpg" alt="" class="lightbox__thumbnail"></button>
+          <button aria-pressed="false" aria-label="View Image 3"><img src="./images/image-product-3-thumbnail.jpg" alt="" class="lightbox__thumbnail"></button>
+          <button aria-pressed="false" aria-label="View Image 4"><img src="./images/image-product-4-thumbnail.jpg" alt="" class="lightbox__thumbnail"></button>
+        </div>
+      </div>
+    </dialog>
+  <script src="./script.js"></script>
+</body>
+</html>
