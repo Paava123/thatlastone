@@ -1,370 +1,225 @@
-/* ============================================================
-   ECOMMERCE PRODUCT PAGE - JAVASCRIPT
-   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  // ===== STAN =====
+  const state = {
+    quantity: 0,
+    cartItems: [],
+    currentImageIndex: 0,
+    isLightboxOpen: false,
+    isCartOpen: false
+  };
 
-(function () {
-  'use strict';
+  const product = {
+    id: 1,
+    name: 'Fall Limited Edition Sneakers',
+    price: 125.00,
+    thumbnail: './images/image-product-1-thumbnail.jpg'
+  };
 
-  // ============================================================
-  // DATA
-  // ============================================================
-  const PRODUCT_IMAGES = [
-    './images/image-product-1.jpg',
-    './images/image-product-2.jpg',
-    './images/image-product-3.jpg',
-    './images/image-product-4.jpg',
-  ];
+  // ===== SELECTORY DOM =====
+  const cartBtn = document.querySelector('.cart-btn');
+  const cartDropdown = document.getElementById('cart-dropdown');
+  const cartContent = document.querySelector('.cart-content');
+  const cartCountBadge = document.querySelector('.cart-count');
 
-  const PRODUCT_THUMBNAILS = [
-    './images/image-product-1-thumbnail.jpg',
-    './images/image-product-2-thumbnail.jpg',
-    './images/image-product-3-thumbnail.jpg',
-    './images/image-product-4-thumbnail.jpg',
-  ];
+  const mainImage = document.querySelector('.main-image');
+  const thumbnails = document.querySelectorAll('.thumbnail');
+  const carouselBtns = document.querySelectorAll('.carousel-btn');
 
-  const PRODUCT_PRICE = 125;
-  const PRODUCT_NAME  = 'Fall Limited Edition Sneakers';
+  // Lightbox - teraz <dialog>
+  const lightbox = document.querySelector('.lightbox-overlay');
+  const lightboxMainImg = document.querySelector('.lightbox-main-image');
+  const lightboxThumbs = document.querySelectorAll('.lightbox-thumbnail');
+  const lightboxNavBtns = document.querySelectorAll('.lightbox-nav');
+  const closeLightboxBtn = document.querySelector('.close-lightbox');
+  const lightboxTrigger = document.querySelector('.lightbox-trigger');
 
-  // ============================================================
-  // STATE
-  // ============================================================
-  let currentMainIndex    = 0;   // currently active image in main gallery
-  let currentLightboxIndex = 0;  // currently active image in lightbox
-  let currentMobileIndex  = 0;   // currently active image in mobile slider
-  let quantity = 0;              // quantity in stepper
-  let cartQuantity = 0;          // items in cart
-  let isLightboxOpen  = false;
-  let isCartOpen      = false;
-  let isSidebarOpen   = false;
+  const qtyBtns = document.querySelectorAll('.qty-btn');
+  const qtyDisplay = document.querySelector('.qty-display');
 
-  // ============================================================
-  // DOM REFS
-  // ============================================================
-  const mainImage           = document.getElementById('mainImage');
-  const mainImageWrapper    = document.getElementById('mainImageWrapper');
-  const thumbBtns           = document.querySelectorAll('.thumbnails .thumb-btn');
+  const addToCartBtn = document.querySelector('.add-to-cart-btn');
 
-  const mobilePrevBtn       = document.getElementById('mobilePrevBtn');
-  const mobileNextBtn       = document.getElementById('mobileNextBtn');
+  // Mobile Menu - teraz <dialog>
+  const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+  const mobileNav = document.querySelector('.mobile-nav');
+  const closeMobileMenu = document.querySelector('.close-menu-btn');
 
-  const lightboxOverlay     = document.getElementById('lightboxOverlay');
-  const lightboxMainImage   = document.getElementById('lightboxMainImage');
-  const lightboxClose       = document.getElementById('lightboxClose');
-  const lightboxPrev        = document.getElementById('lightboxPrev');
-  const lightboxNext        = document.getElementById('lightboxNext');
-  const lightboxThumbs      = document.querySelectorAll('.lightbox-thumbnails .thumb-btn');
+  // ===== FUNKCJE =====
+  const updateQuantity = (change) => {
+    state.quantity = Math.max(0, state.quantity + change);
+    qtyDisplay.textContent = state.quantity;
+  };
 
-  const cartBtn             = document.getElementById('cartBtn');
-  const cartDropdown        = document.getElementById('cartDropdown');
-  const cartBadge           = document.getElementById('cartBadge');
-  const cartBody            = document.getElementById('cartBody');
-
-  const addToCartBtn        = document.getElementById('addToCartBtn');
-  const decreaseQtyBtn      = document.getElementById('decreaseQty');
-  const increaseQtyBtn      = document.getElementById('increaseQty');
-  const qtyDisplay          = document.getElementById('qtyDisplay');
-
-  const hamburgerBtn        = document.getElementById('hamburgerBtn');
-  const sidebarClose        = document.getElementById('sidebarClose');
-  const sidebar             = document.getElementById('sidebar');
-  const sidebarOverlay      = document.getElementById('sidebarOverlay');
-
-  // ============================================================
-  // HELPERS
-  // ============================================================
-  function isMobile() {
-    return window.innerWidth <= 768;
-  }
-
-  // ============================================================
-  // MAIN IMAGE GALLERY (DESKTOP)
-  // ============================================================
-  function setMainImage(index) {
-    currentMainIndex = index;
-    mainImage.src = PRODUCT_IMAGES[index];
-    mainImage.alt = `Fall Limited Edition Sneakers - view ${index + 1}`;
-
-    thumbBtns.forEach((btn, i) => {
-      btn.classList.toggle('active', i === index);
-      btn.setAttribute('aria-selected', i === index ? 'true' : 'false');
-    });
-
-    // Sync lightbox index
-    currentLightboxIndex = index;
-    setLightboxImage(index);
-  }
-
-  thumbBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const index = parseInt(btn.dataset.index, 10);
-      setMainImage(index);
-    });
-  });
-
-  // Click main image to open lightbox (desktop only)
-  mainImageWrapper.addEventListener('click', () => {
-    if (!isMobile()) {
-      openLightbox(currentMainIndex);
+  const renderCart = () => {
+    if (state.cartItems.length === 0) {
+      cartCountBadge.classList.remove('active');
+      cartCountBadge.textContent = '0';
+      cartContent.innerHTML = `<p class="empty-message">Your cart is empty.</p>`;
+      return;
     }
-  });
 
-  // ============================================================
-  // MOBILE SLIDER
-  // ============================================================
-  function setMobileImage(index) {
-    currentMobileIndex = index;
-    mainImage.src = PRODUCT_IMAGES[index];
-    mainImage.alt = `Fall Limited Edition Sneakers - view ${index + 1}`;
-  }
+    const totalCount = state.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    cartCountBadge.textContent = totalCount;
+    cartCountBadge.classList.add('active');
 
-  if (mobilePrevBtn) {
-    mobilePrevBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const newIndex = (currentMobileIndex - 1 + PRODUCT_IMAGES.length) % PRODUCT_IMAGES.length;
-      setMobileImage(newIndex);
-    });
-  }
-
-  if (mobileNextBtn) {
-    mobileNextBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const newIndex = (currentMobileIndex + 1) % PRODUCT_IMAGES.length;
-      setMobileImage(newIndex);
-    });
-  }
-
-  // ============================================================
-  // LIGHTBOX
-  // ============================================================
-  function setLightboxImage(index) {
-    currentLightboxIndex = index;
-    lightboxMainImage.src = PRODUCT_IMAGES[index];
-    lightboxMainImage.alt = `Fall Limited Edition Sneakers - view ${index + 1}`;
-
-    lightboxThumbs.forEach((btn, i) => {
-      btn.classList.toggle('active', i === index);
-      btn.setAttribute('aria-selected', i === index ? 'true' : 'false');
-    });
-  }
-
-  function openLightbox(index) {
-    isLightboxOpen = true;
-    setLightboxImage(index);
-    lightboxOverlay.classList.add('open');
-    lightboxOverlay.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-    lightboxClose.focus();
-  }
-
-  function closeLightbox() {
-    isLightboxOpen = false;
-    lightboxOverlay.classList.remove('open');
-    lightboxOverlay.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-  }
-
-  lightboxClose.addEventListener('click', closeLightbox);
-
-  lightboxPrev.addEventListener('click', () => {
-    const newIndex = (currentLightboxIndex - 1 + PRODUCT_IMAGES.length) % PRODUCT_IMAGES.length;
-    setLightboxImage(newIndex);
-    // sync main gallery
-    setMainImage(newIndex);
-  });
-
-  lightboxNext.addEventListener('click', () => {
-    const newIndex = (currentLightboxIndex + 1) % PRODUCT_IMAGES.length;
-    setLightboxImage(newIndex);
-    setMainImage(newIndex);
-  });
-
-  lightboxThumbs.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const index = parseInt(btn.dataset.index, 10);
-      setLightboxImage(index);
-      setMainImage(index);
-    });
-  });
-
-  // Close lightbox on overlay backdrop click
-  lightboxOverlay.addEventListener('click', (e) => {
-    if (e.target === lightboxOverlay) {
-      closeLightbox();
-    }
-  });
-
-  // ============================================================
-  // QUANTITY STEPPER
-  // ============================================================
-  function updateQtyDisplay() {
-    qtyDisplay.textContent = quantity;
-    qtyDisplay.setAttribute('aria-label', `Quantity: ${quantity}`);
-  }
-
-  decreaseQtyBtn.addEventListener('click', () => {
-    if (quantity > 0) {
-      quantity--;
-      updateQtyDisplay();
-    }
-  });
-
-  increaseQtyBtn.addEventListener('click', () => {
-    quantity++;
-    updateQtyDisplay();
-  });
-
-  // ============================================================
-  // CART
-  // ============================================================
-  function renderCart() {
-    cartBody.innerHTML = '';
-
-    if (cartQuantity === 0) {
-      const emptyDiv = document.createElement('div');
-      emptyDiv.className = 'cart-empty';
-      emptyDiv.innerHTML = '<p>Your cart is empty.</p>';
-      cartBody.appendChild(emptyDiv);
-    } else {
-      const total = (PRODUCT_PRICE * cartQuantity).toFixed(2);
-
-      const itemDiv = document.createElement('div');
-      itemDiv.className = 'cart-item';
-      itemDiv.innerHTML = `
-        <img src="${PRODUCT_THUMBNAILS[0]}" alt="${PRODUCT_NAME}" class="cart-item-thumb">
-        <div class="cart-item-info">
-          <p class="cart-item-name">${PRODUCT_NAME}</p>
-          <p class="cart-item-price">
-            $${PRODUCT_PRICE.toFixed(2)} x ${cartQuantity}
-            <span class="cart-item-total">$${total}</span>
-          </p>
+    let html = '';
+    let totalPrice = 0;
+    state.cartItems.forEach((item, index) => {
+      const itemTotal = item.price * item.quantity;
+      totalPrice += itemTotal;
+      html += `
+        <div class="cart-item">
+          <img src="${item.thumbnail}" alt="${item.name}">
+          <div class="cart-item-details">
+            <span>${item.name}</span>
+            <span>$${item.price.toFixed(2)} x ${item.quantity} <span class="cart-item-total">$${itemTotal.toFixed(2)}</span></span>
+          </div>
+          <button type="button" class="delete-item-btn" aria-label="Remove item from cart" data-index="${index}">
+            <img src="./images/icon-delete.svg" alt="Delete">
+          </button>
         </div>
-        <button class="cart-delete-btn" id="deleteCartItem" aria-label="Remove item from cart">
-          <img src="./images/icon-delete.svg" alt="">
-        </button>
       `;
-      cartBody.appendChild(itemDiv);
+    });
 
-      const checkoutBtn = document.createElement('button');
-      checkoutBtn.className = 'checkout-btn';
-      checkoutBtn.textContent = 'Checkout';
-      checkoutBtn.setAttribute('aria-label', 'Proceed to checkout');
-      cartBody.appendChild(checkoutBtn);
+    html += `<button type="button" class="checkout-btn">Checkout</button>`;
+    cartContent.innerHTML = html;
 
-      // Delete button
-      document.getElementById('deleteCartItem').addEventListener('click', () => {
-        cartQuantity = 0;
-        updateCartBadge();
-        renderCart();
+    cartContent.addEventListener('click', (e) => {
+      const deleteBtn = e.target.closest('.delete-item-btn');
+      if (deleteBtn) {
+        const index = parseInt(deleteBtn.dataset.index, 10);
+        removeFromCart(index);
+      }
+    });
+  };
+
+  const addToCart = () => {
+    if (state.quantity === 0) return;
+
+    const existingItem = state.cartItems.find(item => item.id === product.id);
+    if (existingItem) {
+      existingItem.quantity += state.quantity;
+    } else {
+      state.cartItems.push({
+        ...product,
+        quantity: state.quantity,
+        thumbnail: thumbnails[state.currentImageIndex].querySelector('img').src
       });
     }
-  }
 
-  function updateCartBadge() {
-    if (cartQuantity > 0) {
-      cartBadge.textContent = cartQuantity;
-      cartBadge.removeAttribute('hidden');
-    } else {
-      cartBadge.setAttribute('hidden', '');
-    }
-    cartBtn.setAttribute('aria-label', `Open cart (${cartQuantity} items)`);
-  }
-
-  function openCart() {
-    isCartOpen = true;
-    cartDropdown.classList.add('open');
-    cartDropdown.setAttribute('aria-hidden', 'false');
-    cartBtn.setAttribute('aria-expanded', 'true');
+    state.quantity = 0;
+    qtyDisplay.textContent = '0';
     renderCart();
-  }
+    if (!state.isCartOpen) toggleCart();
+  };
 
-  function closeCart() {
-    isCartOpen = false;
-    cartDropdown.classList.remove('open');
-    cartDropdown.setAttribute('aria-hidden', 'true');
-    cartBtn.setAttribute('aria-expanded', 'false');
-  }
+  const removeFromCart = (index) => {
+    state.cartItems.splice(index, 1);
+    renderCart();
+  };
 
-  cartBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (isCartOpen) {
-      closeCart();
-    } else {
-      openCart();
+  const toggleCart = () => {
+    state.isCartOpen = !state.isCartOpen;
+    cartDropdown.classList.toggle('open', state.isCartOpen);
+    cartBtn.setAttribute('aria-expanded', state.isCartOpen);
+  };
+
+  const updateMainImage = (index) => {
+    state.currentImageIndex = index;
+    const newSrc = `./images/image-product-${index + 1}.jpg`;
+    mainImage.src = newSrc;
+    mainImage.dataset.index = index;
+    
+    thumbnails.forEach((thumb, i) => {
+      thumb.classList.toggle('active', i === index);
+      thumb.setAttribute('aria-selected', i === index);
+    });
+
+    if (lightbox.open) {
+      lightboxMainImg.src = newSrc;
+      lightboxThumbs.forEach((thumb, i) => {
+        thumb.classList.toggle('active', i === index);
+      });
     }
+  };
+
+  // ===== OBSŁUGA ZDARZEŃ =====
+
+  cartBtn.addEventListener('click', toggleCart);
+
+  qtyBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const isMinus = btn.classList.contains('minus');
+      updateQuantity(isMinus ? -1 : 1);
+    });
   });
 
-  addToCartBtn.addEventListener('click', () => {
-    if (quantity === 0) return;
-    cartQuantity += quantity;
-    quantity = 0;
-    updateQtyDisplay();
-    updateCartBadge();
-    // Refresh cart if open
-    if (isCartOpen) renderCart();
+  addToCartBtn.addEventListener('click', addToCart);
+
+  thumbnails.forEach((thumb, index) => {
+    thumb.addEventListener('click', () => updateMainImage(index));
   });
 
-  // Close cart on outside click
-  document.addEventListener('click', (e) => {
-    if (isCartOpen && !cartDropdown.contains(e.target) && !cartBtn.contains(e.target)) {
-      closeCart();
-    }
+  carouselBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      let newIndex = state.currentImageIndex;
+      if (btn.classList.contains('prev')) {
+        newIndex = (newIndex - 1 + 4) % 4;
+      } else {
+        newIndex = (newIndex + 1) % 4;
+      }
+      updateMainImage(newIndex);
+    });
   });
 
-  // ============================================================
-  // MOBILE SIDEBAR
-  // ============================================================
-  function openSidebar() {
-    isSidebarOpen = true;
-    sidebar.classList.add('active');
-    sidebar.setAttribute('aria-hidden', 'false');
-    sidebarOverlay.classList.add('active');
-    hamburgerBtn.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-    sidebarClose.focus();
-  }
+  // Lightbox - Otwieranie (show())
+  lightboxTrigger.addEventListener('click', () => {
+    lightbox.showModal(); // showModal() zapewnia nakładkę i zablokowanie tła
+  });
 
-  function closeSidebar() {
-    isSidebarOpen = false;
-    sidebar.classList.remove('active');
-    sidebar.setAttribute('aria-hidden', 'true');
-    sidebarOverlay.classList.remove('active');
-    hamburgerBtn.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  }
-
-  hamburgerBtn.addEventListener('click', openSidebar);
-  sidebarClose.addEventListener('click', closeSidebar);
-  sidebarOverlay.addEventListener('click', closeSidebar);
-
-  // ============================================================
-  // KEYBOARD NAVIGATION
-  // ============================================================
+  // Lightbox - Zamykanie (close())
+  closeLightboxBtn.addEventListener('click', () => lightbox.close());
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      if (isLightboxOpen) closeLightbox();
-      if (isCartOpen)     closeCart();
-      if (isSidebarOpen)  closeSidebar();
-    }
+    if (e.key === 'Escape' && lightbox.open) lightbox.close();
+  });
 
-    if (isLightboxOpen) {
-      if (e.key === 'ArrowLeft') {
-        const newIndex = (currentLightboxIndex - 1 + PRODUCT_IMAGES.length) % PRODUCT_IMAGES.length;
-        setLightboxImage(newIndex);
-        setMainImage(newIndex);
+  lightboxThumbs.forEach((thumb, index) => {
+    thumb.addEventListener('click', () => {
+      updateMainImage(index);
+      lightboxMainImg.src = `./images/image-product-${index + 1}.jpg`;
+      lightboxThumbs.forEach((t, i) => t.classList.toggle('active', i === index));
+    });
+  });
+
+  lightboxNavBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      let newIndex = state.currentImageIndex;
+      if (btn.classList.contains('prev')) {
+        newIndex = (newIndex - 1 + 4) % 4;
+      } else {
+        newIndex = (newIndex + 1) % 4;
       }
-      if (e.key === 'ArrowRight') {
-        const newIndex = (currentLightboxIndex + 1) % PRODUCT_IMAGES.length;
-        setLightboxImage(newIndex);
-        setMainImage(newIndex);
-      }
+      updateMainImage(newIndex);
+      lightboxMainImg.src = `./images/image-product-${newIndex + 1}.jpg`;
+      lightboxThumbs.forEach((t, i) => t.classList.toggle('active', i === newIndex));
+    });
+  });
+
+  // Mobile Menu - Otwieranie (show())
+  mobileMenuToggle.addEventListener('click', () => {
+    if (mobileNav.open) {
+      mobileNav.close();
+    } else {
+      mobileNav.showModal();
     }
   });
 
-  // ============================================================
-  // INIT
-  // ============================================================
-  renderCart();
-  updateQtyDisplay();
-  updateCartBadge();
+  closeMobileMenu.addEventListener('click', () => mobileNav.close());
 
-})();
+  // Zamknij menu po kliknięciu linku
+  document.querySelectorAll('.mobile-nav-list a').forEach(link => {
+    link.addEventListener('click', () => mobileNav.close());
+  });
+
+  // ===== INICJALIZACJA =====
+  renderCart();
+});
