@@ -1,38 +1,64 @@
-# Frontend Mentor — E-commerce Product Page
+# Frontend Mentor - E-commerce product page
 
-![Project preview](PO.png)
+This is a solution to the [E-commerce product page challenge on Frontend Mentor](https://www.frontendmentor.io/challenges/ecommerce-product-page-UPol8lgez).
+
+## Table of contents
+
+- [Overview](#overview)
+  - [Screenshot](#screenshot)
+  - [Links](#links)
+- [My process](#my-process)
+  - [Built with](#built-with)
+  - [What I learned](#what-i-learned)
+  - [Continued development](#continued-development)
+- [Author](#author)
+
+---
 
 ## Overview
 
-A fully responsive e-commerce product page built as a [Frontend Mentor](https://www.frontendmentor.io) challenge. The page includes a mobile navigation drawer, an interactive image gallery with thumbnail navigation, a quantity stepper, a cart dropdown, and a desktop lightbox modal — all built with vanilla HTML, CSS, and JavaScript.
+### Screenshot
 
-## Features
+| ![Desktop design](./design/desktop-design.jpg) | ![Mobile design](./design/mobile-design.jpg) |
+| :--: | :--: |
+| Desktop | Mobile |
 
-- Mobile-first responsive layout
-- Slide-in/out navigation drawer with overlay
-- Image gallery with direction-aware slide animation
-- Thumbnail navigation with active state
-- Add to cart with quantity control and item deletion
-- Cart dropdown with live item count badge
-- Desktop lightbox modal using the native `<dialog>` element, with arrow and thumbnail navigation synced to the main gallery
+### Links
 
-## What I Learned
+- Solution URL: [Frontend Mentor](https://www.frontendmentor.io/solutions/e-commerce-product-page-PnN4EAZuxg)
+- Live Site URL: [GitHub Pages](https://rahulpaul127.github.io/ecommerce-product-page-main/)
 
-- **CSS Grid and Flexbox** — combining both to build a two-column product layout and flexible component internals
-- **Mobile-first CSS** — structuring styles with a single `@media (min-width: 900px)` breakpoint
-- **BEM-ish naming** — keeping class names consistent and readable across a growing stylesheet
-- **Direction-aware animation** — tracking navigation direction to apply the correct slide animation class, using `void element.offsetWidth` to force a reflow between class removals and additions
-- **Native `<dialog>`** — using `showModal()` and `close()` with custom backdrop styling and overflow quirks
-- **State synchronization** — keeping a shared `currentIndex` in sync across the main gallery, lightbox image, and two independent sets of thumbnails
-- **Accessible markup** — `aria-expanded`, `aria-pressed`, `aria-label`, `aria-modal`, and focus management on open/close
+---
 
-## Built With
+## My process
 
-- Semantic HTML5
+### Built with
+
+- Semantic HTML5 markup
 - CSS custom properties
-- CSS Grid and Flexbox
-- Vanilla JavaScript (no frameworks)
+- CSS Flexbox
+- CSS Grid
+- Mobile-first responsive workflow
+- Vanilla JavaScript for DOM manipulation
 
-## Acknowledgements
+### What I learned
 
-Challenge by [Frontend Mentor](https://www.frontendmentor.io/challenges/ecommerce-product-page-UPsZ9MJp6).
+- How to build a **synced image gallery** across three separate states — the main product view, the desktop lightbox, and the mobile slider — all staying in sync using a shared index and a single `setMainImage()` function that updates all three at once.
+- Implementing a **desktop-only lightbox** that opens on image click, supports prev/next navigation, thumbnail selection, backdrop click to close, and full keyboard navigation (Arrow keys + Escape) — all without any library.
+- Using the **modulo operator (`%`)** for infinite circular navigation through an image array, so going past the last image wraps back to the first and vice versa.
+- Managing **multiple UI states** (lightbox open, cart open, sidebar open) simultaneously with boolean flags, and using a single `keydown` listener to handle `Escape` and `ArrowLeft`/`ArrowRight` across all of them.
+- **Dynamically rendering the cart** using `createElement` and `innerHTML` instead of hiding/showing static HTML, which keeps the DOM clean and makes it easy to update the item count, price calculation, and delete functionality on the fly.
+- Handling the **`hidden` HTML attribute correctly** — applying `[hidden] { display: none !important; }` in CSS to prevent other display rules from overriding it, which fixed the cart badge showing "0" on load.
+- Building a **mobile slide-in sidebar** with a dark overlay, CSS `transform: translateX()` transition, focus management, and scroll-lock (`overflow: hidden` on `body`) for a native app-like feel.
+
+### Continued development
+
+- Add the final deployed links after publishing the project.
+- Explore adding a **touch swipe gesture** on the mobile image slider for a more natural mobile experience.
+- Consider persisting the cart to `localStorage` so items aren't lost on page refresh.
+- Add a **quantity limit** to prevent unrealistic cart amounts (e.g., max 10 items).
+
+## Author
+
+- Frontend Mentor - [@rahulpaul127](https://www.frontendmentor.io/profile/rahulpaul127)
+- Twitter - [@rahulpaul127](https://x.com/rahulpaul127)
